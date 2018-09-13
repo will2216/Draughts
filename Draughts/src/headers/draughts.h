@@ -22,7 +22,7 @@ namespace draughts {
 
 	// Captures a piece (takes rules into account)
 	bool capture(int (&board)[10][10], int const &capTargetPos, const int &capturerPos);
-
+	
 	// Gets all possible moves (cannot see captures)
 	std::vector<int[2][2]> GetMoves(int(&board)[10][10]);
 
