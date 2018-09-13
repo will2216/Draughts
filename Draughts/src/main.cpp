@@ -10,8 +10,10 @@ int main() {
 	draughts::init(board);
 	draughts::print(board);
 
+	board[6][3] = -1;
+	board[5][2] = 1;
 
-	std::cout << draughts::move(board, { 5, 3 }, { 4, 4 });
+	std::cout << draughts::captureM(board, { 6, 3 }, { 5, 2 });
 	std::cout << "--------------------------- \n \n";
 	
 	draughts::print(board);

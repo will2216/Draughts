@@ -87,18 +87,36 @@ void draughts::print(const int (&board)[10][10])
 	}
 }
 
-bool draughts::move(int(&board)[10][10], int const (&curPos)[2], const int(&desPos)[2])
+bool draughts::move(int(&board)[10][10], const int (&curPos)[2], const int(&desPos)[2])
 {
 	// if the position of the piece or the destination are invalid, return false.
 	if (!((desPos[0] > -1) && (desPos[1] > -1) && (curPos[0] > -1) && (curPos[1] > -1)))
 		return false;
 
 	// if the target of movement is invalid (0 or -9), return false.
-	if (!board[curPos[0]][curPos[1]] || board[curPos[0]][curPos[1]] == -9)
+	else if (!board[curPos[0]][curPos[1]] || board[curPos[0]][curPos[1]] == -9)
 		return false;
 
+	// if the target of movement is a "man". execute this to attempt movement.
+	else if (board[curPos[0]][curPos[1]] == 1 || board[curPos[0]][curPos[1]] == -1)
+	{
+		// first we check if the movement is ONE rank difference in the correct direction.
+		// then we check if the movement is ONE file difference (pieces always change files whe moving)
+		// then lastly we check if the spot the piece wants to move to is free(0)
+		if (((-board[curPos[0]][curPos[1]] + curPos[0]) == desPos[0]) /**/ && /**/ ((curPos[1] + 1 == desPos[1]) || (curPos[1] - 1 == desPos[1])) /**/ && /**/ (!board[desPos[0]][desPos[1]]))
+		{
+			board[desPos[0]][desPos[1]] = board[curPos[0]][curPos[1]];
+			board[curPos[0]][curPos[1]] = 0;
+			return true;
+		}
+
+		// if all the conditions are not met, return false.
+		else
+			return false;
+	}
+
 	// if the target of movement is a king, execute this to atttemp movement.
-	if (board[curPos[0]][curPos[1]] == 3 || board[curPos[0]][curPos[1]] == -3)
+	else if (board[curPos[0]][curPos[1]] == 3 || board[curPos[0]][curPos[1]] == -3)
 	{
 		// if the piece is moving downwards, execute this.
 		if (curPos[0] < desPos[0])
@@ -170,25 +188,119 @@ bool draughts::move(int(&board)[10][10], int const (&curPos)[2], const int(&desP
 		}
 	}
 
-	// if the target of movement is a "man". execute this to attempt movement.
-	if (board[curPos[0]][curPos[1]] == 1 || board[curPos[0]][curPos[1]] == -1)
-	{
-		// first we check if the movement is ONE rank difference in the correct direction.
-		// then we check if the movement is ONE file difference (pieces always change files whe moving)
-		// then lastly we check if the spot the piece wants to move to is free(0)
-		if (((-board[curPos[0]][curPos[1]] + curPos[0]) == desPos[0]) /**/ && /**/ ((curPos[1] + 1 == desPos[1]) || (curPos[1] - 1 == desPos[1])) /**/ && /**/ (!board[desPos[0]][desPos[1]]))
-		{
-			board[desPos[0]][desPos[1]] = board[curPos[0]][curPos[1]];
-			board[curPos[0]][curPos[1]] = 0;
-			return true;
-		}
-
-		// if all the conditions are not met, return false.
-		else
-			return false;
-	}
 
 	// If this return is reached, something went wrong. Return false.
 	return false;
 }
 
+bool draughts::capture(int(&board)[10][10], const int(&capPos)[2], const int(&tarPos)[2], const int(&landPos)[2])
+{
+	// if the captuerer isn't a king, pass it to the normal capture funtion.
+	if (!(board[capPos[0]][capPos[1]] == 3 || board[capPos[0]][capPos[1]] == -3))
+		draughts::capture(board, capPos, tarPos);
+
+	else
+	{
+
+	}
+}
+
+bool draughts::capture(int(&board)[10][10], const int (&capPos)[2], const int (&tarPos)[2])
+{
+	if (!board[capPos[0]][capPos[1]] || board[capPos[0]][capPos[1]] == -9)
+		return false;
+
+	// execute this if the capturer is a "man"
+	else if (board[capPos[0]][capPos[1]] == 1 || board[capPos[0]][capPos[1]] == -1)
+	{
+		// if the capture is going down and to the right
+		if ((capPos[0] + 1 == tarPos[0]) && (capPos[1] + 1 == tarPos[1]))
+		{
+			// check if the pieces are on opposite teams
+			if ((board[tarPos[0]][tarPos[1]] < 0 && 0 < board[capPos[0]][capPos[1]]) || (board[tarPos[0]][tarPos[1]] > 0 && 0 > board[capPos[0]][capPos[1]]))
+			{
+				// check if the "landing area" is clear
+				if (!board[tarPos[0] + 1][tarPos[1] + 1])
+				{
+					// do the capture
+					board[tarPos[0] + 1][tarPos[1] + 1] = board[capPos[0]][capPos[1]];
+					board[capPos[0]][capPos[1]] = 0;
+					board[tarPos[0]][tarPos[1]] = 0;
+					return true;
+				}
+				else
+					return false;
+			}
+			else
+				return false;
+		}
+		// if the capture is going down and to the left
+		else if ((capPos[0] + 1 == tarPos[0]) && (capPos[1] - 1 == tarPos[1]))
+		{
+			// check if the pieces are on opposite teams
+			if ((board[tarPos[0]][tarPos[1]] < 0 && 0 < board[capPos[0]][capPos[1]]) || (board[tarPos[0]][tarPos[1]] > 0 && 0 > board[capPos[0]][capPos[1]]))
+			{
+				// check if the "landing area" is clear
+				if (!board[tarPos[0] + 1][tarPos[1] - 1])
+				{
+					// do the capture
+					board[tarPos[0] + 1][tarPos[1] - 1] = board[capPos[0]][capPos[1]];
+					board[capPos[0]][capPos[1]] = 0;
+					board[tarPos[0]][tarPos[1]] = 0;
+					return true;
+				}
+				else
+					return false;
+			}
+			else
+				return false;
+		}
+		// if the capture is going up and to the right
+		else if ((capPos[0] - 1 == tarPos[0]) && (capPos[1] + 1 == tarPos[1]))
+		{
+			// check if the pieces are on opposite teams
+			if ((board[tarPos[0]][tarPos[1]] < 0 && 0 < board[capPos[0]][capPos[1]]) || (board[tarPos[0]][tarPos[1]] > 0 && 0 > board[capPos[0]][capPos[1]]))
+			{
+				// check if the "landing area" is clear
+				if (!board[tarPos[0] - 1][tarPos[1] + 1])
+				{
+					// do the capture
+					board[tarPos[0] - 1][tarPos[1] + 1] = board[capPos[0]][capPos[1]];
+					board[capPos[0]][capPos[1]] = 0;
+					board[tarPos[0]][tarPos[1]] = 0;
+					return true;
+				}
+				else
+					return false;
+			}
+			else
+				return false;
+		}
+		// if the capture is going up and to the left
+		else if ((capPos[0] - 1 == tarPos[0]) && (capPos[1] - 1 == tarPos[1]))
+		{
+			// check if the pieces are on opposite teams
+			if ((board[tarPos[0]][tarPos[1]] < 0 && 0 < board[capPos[0]][capPos[1]]) || (board[tarPos[0]][tarPos[1]] > 0 && 0 > board[capPos[0]][capPos[1]]))
+			{
+				// check if the "landing area" is clear
+				if (!board[tarPos[0] - 1][tarPos[1] - 1])
+				{
+					// do the capture
+					board[tarPos[0] - 1][tarPos[1] - 1] = board[capPos[0]][capPos[1]];
+					board[capPos[0]][capPos[1]] = 0;
+					board[tarPos[0]][tarPos[1]] = 0;
+					return true;
+				}
+				else
+					return false;
+			}
+			else
+				return false;
+		}
+		else
+			return false;
+	}
+
+	// if the code reaches this point, something went wrong.
+	return false;
+}
