@@ -32,7 +32,7 @@ namespace draughts {
 	std::vector<int[2][2]> GetCaptures(int (&board)[10][10]);
 
 	// Gets the captures of a specific piece
-	std::vector<int[2][2]> GetPCap(int(&board)[10][10], const int &piecePos);
+	std::vector<int[2][2]> GetPCap(int(&board)[10][10], const int (&piecePos)[2]);
 
 	// Gets moves/captures of a specific piece (calls GetCaptures to check if a move is legal at all), returns { 0, 0 } if no moves/captures are legal.
 	std::vector<int[2][2]> GetPMovCap(int(&board)[10][10], const int &piecePos);

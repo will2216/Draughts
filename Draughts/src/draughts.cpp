@@ -193,7 +193,7 @@ bool draughts::move(int(&board)[10][10], const int (&curPos)[2], const int(&desP
 	return false;
 }
 
-bool draughts::capture(int(&board)[10][10], const int(&capPos)[2], const int(&tarPos)[2], const int(&landPos)[2])
+bool draughts::capture(int (&board)[10][10], const int(&capPos)[2], const int(&tarPos)[2], const int(&landPos)[2])
 {
 	// if the captuerer isn't a king, pass it to the normal capture funtion.
 	if (!(board[capPos[0]][capPos[1]] == 3 || board[capPos[0]][capPos[1]] == -3))
@@ -203,6 +203,8 @@ bool draughts::capture(int(&board)[10][10], const int(&capPos)[2], const int(&ta
 	{
 
 	}
+
+	return false;
 }
 
 bool draughts::capture(int(&board)[10][10], const int (&capPos)[2], const int (&tarPos)[2])
@@ -303,4 +305,16 @@ bool draughts::capture(int(&board)[10][10], const int (&capPos)[2], const int (&
 
 	// if the code reaches this point, something went wrong.
 	return false;
+}
+
+std::vector<int[2][2]> draughts::GetPCap(int(&board)[10][10], const int(&pPos)[2])
+{
+	std::vector<int[2][2]> rvec(3);
+
+	// check if the piece is a "man"	
+	if (board[pPos[0]][pPos[1]] == 1 || board[pPos[0]][pPos[1]] == -1)
+	{
+
+	}
+	return rvec;
 }

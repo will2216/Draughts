@@ -13,7 +13,7 @@ int main() {
 	board[6][3] = -1;
 	board[5][2] = 1;
 
-	std::cout << draughts::captureM(board, { 6, 3 }, { 5, 2 });
+	std::cout << draughts::capture(board, { 6, 3 }, { 5, 2 });
 	std::cout << "--------------------------- \n \n";
 	
 	draughts::print(board);
