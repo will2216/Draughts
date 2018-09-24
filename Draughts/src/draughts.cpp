@@ -307,14 +307,17 @@ bool draughts::capture(int(&board)[10][10], const int (&capPos)[2], const int (&
 	return false;
 }
 
-std::vector<int[2][2]> draughts::GetPCap(int(&board)[10][10], const int(&pPos)[2])
+std::vector<blib::pos> draughts::GetPCap(int(&board)[10][10], const int(&pPos)[2])
 {
-	std::vector<int[2][2]> rvec(3);
+	std::vector<blib::pos> rvec(3);
 
 	// check if the piece is a "man"	
 	if (board[pPos[0]][pPos[1]] == 1 || board[pPos[0]][pPos[1]] == -1)
 	{
+		for (int i = 0; i < 4; i++)
+		{
 
+		}
 	}
 	return rvec;
 }
