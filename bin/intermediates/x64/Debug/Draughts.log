@@ -1,0 +1,5 @@
+﻿  draughts.cpp
+c:\visual git\draughts\draughts\src\draughts.cpp(424): warning C4267: 'argument': conversion from 'size_t' to 'const int', possible loss of data
+c:\visual git\draughts\draughts\src\draughts.cpp(461): warning C4267: 'argument': conversion from 'size_t' to 'const int', possible loss of data
+c:\visual git\draughts\draughts\src\draughts.cpp(227): warning C4715: 'CapPos': not all control paths return a value
+  Draughts.vcxproj -> C:\Visual git\Draughts\\bin\x64\Debug\Draughts.exe
