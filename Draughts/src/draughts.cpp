@@ -226,7 +226,7 @@ blib::pos CapPos(const blib::pos &pPos, const int &CapNum)
 	}
 };
 
-
+ 
 bool draughts::LegalCap(const int(&board)[10][10], const blib::pos &pPos, const int &CapNum)
 {
 	return draughts::LegalCap(board, pPos, CapNum, 0, board[pPos[0]][pPos[1]]);

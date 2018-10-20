@@ -14,7 +14,7 @@ namespace blib
 				return m_y;
 			else 
 				return m_x;
-		}
+		} 
 
 		int operator[](const int &index) const
 		{

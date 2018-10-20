@@ -3,7 +3,7 @@
 #include <vector>
 #include "blib.h"
 
-
+ 
 
 namespace draughts
 {

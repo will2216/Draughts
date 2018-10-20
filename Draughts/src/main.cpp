@@ -24,7 +24,7 @@ int main() {
 	draughts::init(board);
 	draughts::print(board);
 
-
+	 
 
 	std::cout << "--------------------------- \n \n";
 
