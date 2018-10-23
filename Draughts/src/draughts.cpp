@@ -2,6 +2,8 @@
 #include "headers/draughts.h"
 
 #include <vector>
+#include <algorithm>
+#include <functional>
 #include <string>
 #include <iostream>
 
@@ -206,27 +208,27 @@ bool draughts::move(int(&board)[10][10], const draughts::moveDef &move)
 }
 
 
-blib::pos CapPos(const blib::pos &pPos, const int &CapNum)
+blib::pos CapPos(const blib::pos &pPos, const int &CapNum, const int &CapLen)
 {
 	if (CapNum == 0)
 	{
-		return {pPos[0] -1, pPos[1] - 1};
+		return {pPos[0] - CapLen, pPos[1] - CapLen};
 	}
 	else if (CapNum == 1)
 	{
-		return { pPos[0] - 1, pPos[1] + 1 };
+		return { pPos[0] - CapLen, pPos[1] + CapLen };
 	}
 	else if (CapNum == 2)
 	{
-		return { pPos[0] + 1, pPos[1] + 1 };
+		return { pPos[0] + CapLen, pPos[1] + CapLen };
 	}
 	else if (CapNum == 3)
 	{
-		return { pPos[0] + 1, pPos[1] - 1 };
+		return { pPos[0] + CapLen, pPos[1] - CapLen };
 	}
 };
 
- 
+
 bool draughts::LegalCap(const int(&board)[10][10], const blib::pos &pPos, const int &CapNum)
 {
 	return draughts::LegalCap(board, pPos, CapNum, 0, board[pPos[0]][pPos[1]]);
@@ -257,12 +259,121 @@ bool draughts::LegalCap(const int(&board)[10][10], const blib::pos &pPos, const 
 			return ((board[pPos[0] + 1][pPos[1] - 1] == -pType || board[pPos[0] + 1][pPos[1] - 1] == -3 * pType) && board[pPos[0] + 2][pPos[1] - 2] == 0);
 		}
 	}
-	else if (pType == 3 || pType == -3)
-	{
-
-	}
-
 	return false;
+}
+
+bool draughts::LegalCap(const int(&board)[10][10], const blib::pos &pPos, const int &CapNum, const int &CapLeng, const int &pType, blib::pos &CaptP)
+{
+	if (pType == 3 || pType == -3)
+	{
+		bool FoundCapPiece = false;
+		bool FoundLandPos = false;
+
+		if (CapNum == 0)
+		{
+			for (int i = 1; i < CapLeng + 1; i++)
+			{
+				if (board[pPos[0] - i][pPos[1] - i] == 0)
+				{
+					if (FoundCapPiece)
+						FoundLandPos = true;
+					continue;
+				}
+				else if (board[pPos[0] - i][pPos[1] - i] == -pType || board[pPos[0] - i][pPos[1] - i] == -(pType / 3))
+				{
+					if (FoundCapPiece)
+						return false;
+					else
+					{
+						FoundCapPiece = true;
+						CaptP = { pPos[0] - i, pPos[1] - i };
+					}
+				}
+				else if (board[pPos[0] - i][pPos[1] - i] == pType || board[pPos[0] - i][pPos[1] - i] == (pType / 3))
+					return false;
+			}
+			
+			return FoundCapPiece && FoundLandPos;
+		}
+		else if (CapNum == 1)
+		{
+			for (int i = 1; i < CapLeng + 1; i++)
+			{
+				if (board[pPos[0] - i][pPos[1] + i] == 0)
+				{
+					if (FoundCapPiece)
+						FoundLandPos = true;
+					continue;
+				}
+				else if (board[pPos[0] - i][pPos[1] + i] == -pType || board[pPos[0] - i][pPos[1] + i] == -(pType / 3))
+				{
+					if (FoundCapPiece)
+						return false;
+					else
+					{
+						FoundCapPiece = true;
+						CaptP = { pPos[0] - i, pPos[1] + i };
+					}
+				}
+				else if (board[pPos[0] - i][pPos[1] + i] == pType || board[pPos[0] - i][pPos[1] + i] == (pType / 3))
+					return false;
+			}
+
+			return FoundCapPiece && FoundLandPos;
+		}
+		else if (CapNum == 2)
+		{
+			for (int i = 1; i < CapLeng + 1; i++)
+			{
+				if (board[pPos[0] + i][pPos[1] + i] == 0)
+				{
+					if (FoundCapPiece)
+						FoundLandPos = true;
+					continue;
+				}
+				else if (board[pPos[0] + i][pPos[1] + i] == -pType || board[pPos[0] + i][pPos[1] + i] == -(pType / 3))
+				{
+					if (FoundCapPiece)
+						return false;
+					else
+					{
+						FoundCapPiece = true;
+						CaptP = { pPos[0] + i, pPos[1] + i };
+					}
+				}
+				else if (board[pPos[0] + i][pPos[1] + i] == pType || board[pPos[0] + i][pPos[1] + i] == (pType / 3))
+					return false;
+			}
+
+			return FoundCapPiece && FoundLandPos;
+		}
+		else if (CapNum == 3)
+		{
+			for (int i = 1; i < CapLeng + 1; i++)
+			{
+				if (board[pPos[0] + i][pPos[1] - i] == 0)
+				{
+					if (FoundCapPiece)
+						FoundLandPos = true;
+					continue;
+				}
+				else if (board[pPos[0] + i][pPos[1] - i] == -pType || board[pPos[0] + i][pPos[1] - i] == -(pType / 3))
+				{
+					if (FoundCapPiece)
+						return false;
+					else
+					{
+						FoundCapPiece = true;
+						CaptP = { pPos[0] + i, pPos[1] - i };
+					}
+				}
+				else if (board[pPos[0] + i][pPos[1] - i] == pType || board[pPos[0] + i][pPos[1] - i] == (pType / 3))
+					return false;
+			}
+
+			return FoundCapPiece && FoundLandPos;
+		}
+	}
 }
 
 
@@ -410,7 +521,7 @@ std::vector<draughts::moveDef> draughts::GetPCap(int(&board)[10][10], const blib
 		{
 			if (draughts::LegalCap(board, pPos, i))
 			{
-				draughts::moveDef temp(draughts::moveDef::CAPTURE, pPos, CapPos(CapPos(pPos, i), i), CapPos(pPos, i));
+				draughts::moveDef temp(draughts::moveDef::CAPTURE, pPos, CapPos(pPos, i, 2), CapPos(pPos, i, 1));
 
 				rvec.push_back(temp);
 
@@ -420,15 +531,75 @@ std::vector<draughts::moveDef> draughts::GetPCap(int(&board)[10][10], const blib
 					board[pPos[0]][pPos[1]], 
 					rvec, 
 					((rvec.size()) - 1), 
-					CapPos(CapPos(pPos, i), i)
+					CapPos(pPos, i, 2)
 				);
 			}
 		}
 	}
 	else if (board[pPos.m_x][pPos.m_y] == 3 || board[pPos.m_x][pPos.m_y] == -3)
 	{
+		for (int i = 0; i < 4; i++)
+		{
+			for (int x = 0; x < 10; x++)
+			{
+				if (i == 0)
+				{
+					if ((pPos[0] - x < 0) || (pPos[1] - x < 0))
+						break;
+				}
+				else if (i == 1)
+				{
+					if ((pPos[0] - x < 0) || (pPos[1] + x > 9))
+						break;
+				}
+				else if (i == 2)
+				{
+					if ((pPos[0] + x > 9) || (pPos[1] + x > 9))
+						break;
+				}
+				else if (i == 3)
+				{
+					if ((pPos[0] + x > 9) || (pPos[1] - x < 0))
+						break;
+				}
+				blib::pos CPOS;
+				if (draughts::LegalCap(board, pPos, i, x, board[pPos[0]][pPos[1]], CPOS))
+				{
+					draughts::moveDef temp(draughts::moveDef::CAPTURE, pPos, CapPos(pPos, i, x), CPOS);
 
+					rvec.push_back(temp);
+
+					draughts::GetPCap(
+						board,
+						((i < 2) ? (i + 2) : (i - 2)),
+						board[pPos[0]][pPos[1]],
+						rvec,
+						((rvec.size()) - 1),
+						CapPos(pPos, i, x)
+					);
+				}
+			}
+		}
 	}
+
+	std::sort(rvec.begin(), rvec.end(), [](draughts::moveDef a, draughts::moveDef b) {
+		return a.m_moves.size() > b.m_moves.size();
+	});
+
+	int largestFound = rvec[0].m_moves.size();
+	//std::cout << largestFound << "\n";
+	int delBegin = 0;
+
+	for (int i = 0; i < rvec.size(); i++)
+	{
+		//std::cout << rvec[i].m_moves.size() << " ; " << (rvec[i].m_moves.size() < largestFound) << "\n";
+		if (rvec[i].m_moves.size() < largestFound)
+		{
+			delBegin = i;
+			break;
+		}
+	}
+	rvec.erase((rvec.begin() + delBegin), rvec.end());
 
 	return rvec;
 }
@@ -440,32 +611,112 @@ std::vector<draughts::moveDef> draughts::GetPCap(int(&board)[10][10], const int 
 	{
 		for (int i = 0; i < 4; i++)
 		{
-			if (!(i == from))
+			if (i != from)
 			{
 				if (draughts::LegalCap(board, newPos, i, pType))
 				{
+					if(CapList[stamovnum].m_capt.size() > 3) 
+					{
+						bool checker = true;
+						for (int x = 0; x < CapList[stamovnum].m_capt.size(); x++)
+						{
+							if (CapList[stamovnum].m_capt[x] == CapPos(newPos, i, 1))
+							{
+								checker = false;
+								break;
+							}
+								
+						}
+						if (!checker)
+							continue;
+					}
+					
 					draughts::moveDef temp = CapList[stamovnum];
 
-					temp.m_moves.push_back(CapPos(CapPos(newPos, i),i));
-					temp.m_capt.push_back(CapPos(newPos, i));
+					temp.m_moves.push_back(CapPos(newPos, i, 2));
+					temp.m_capt.push_back(CapPos(newPos, i, 1));
 
 					CapList.push_back(temp);
 
 					draughts::GetPCap(
 						board,
 						(i < 2) ? (i + 2) : (i - 2),
-						board[newPos[0]][newPos[1]],
+						pType,
 						CapList,
 						CapList.size() - 1,
-						CapPos(CapPos(newPos, i),i)
+						CapPos(newPos, i, 2)
 					);
+					
 				}
 			}
 		}
 	}
 	else
 	{
+		for (int i = 0; i < 4; i++)
+		{
+			if (i != from)
+			{
+				for (int x = 0; x < 10; x++)
+				{
+					if (i == 0)
+					{
+						if ((newPos[0] - x < 0) || (newPos[1] - x < 0))
+							break;
+					}
+					else if (i == 1)
+					{
+						if ((newPos[0] - x < 0) || (newPos[1] + x > 9))
+							break;
+					}
+					else if (i == 2)
+					{
+						if ((newPos[0] + x > 9) || (newPos[1] + x > 9))
+							break;
+					}
+					else if (i == 3)
+					{
+						if ((newPos[0] + x > 9) || (newPos[1] - x < 0))
+							break;
+					}
+					blib::pos CPOS;
+					if (draughts::LegalCap(board, newPos, i, x, pType, CPOS))
+					{
+						if (CapList[stamovnum].m_capt.size() > 3)
+						{
+							bool checker = true;
+							for (int x = 0; x < CapList[stamovnum].m_capt.size(); x++)
+							{
+								if (CapList[stamovnum].m_capt[x] == CPOS)
+								{
+									checker = false;
+									break;
+								}
 
+							}
+							if (!checker)
+								continue;
+						}
+
+						draughts::moveDef temp = CapList[stamovnum];
+
+						temp.m_moves.push_back(CapPos(newPos, i, x));
+						temp.m_capt.push_back(CPOS);
+
+						CapList.push_back(temp);
+
+						draughts::GetPCap(
+							board,
+							(i < 2) ? (i + 2) : (i - 2),
+							pType,
+							CapList,
+							CapList.size() - 1,
+							CapPos(newPos, i, x)
+						);
+					}
+				}
+			}
+		}
 	}
 
 	return CapList;

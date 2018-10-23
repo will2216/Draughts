@@ -28,12 +28,18 @@ int main() {
 
 	std::cout << "--------------------------- \n \n";
 
-	board[4][1] = 1;
-	board[2][3] = 0;
+	board[5][4] = -1;
+	board[4][3] = 0;
+	board[2][7] = 0;
+	board[4][5] = 3;
+	board[4][9] = 3;
+	board[6][3] = 0;
+
 
 	draughts::print(board);
 
-	std::vector<draughts::moveDef> testVector = draughts::GetPCap(board, { 4,1 });
+
+	std::vector<draughts::moveDef> testVector = draughts::GetPCap(board, { 4,5 });
 
 
 	for (int i = 0; i < (int)(testVector.size()); i++) {

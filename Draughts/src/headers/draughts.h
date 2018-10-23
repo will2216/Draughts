@@ -112,6 +112,8 @@ namespace draughts
 	std::vector<moveDef> GetLegalMoves(int(&board)[10][10]);
 
 	// Checks if a capture is legal (captures start in the top left and go clockwise, they also start at 0).
+	bool LegalCap(const int(&board)[10][10], const blib::pos &pPos, const int &CapNum, const int &CapLeng, const int &pType, blib::pos &CaptP);
+
 	bool LegalCap(const int(&board)[10][10], const blib::pos &pPos, const int &CapNum, const int &CapLeng, const int &pType);
 
 	bool LegalCap(const int(&board)[10][10], const blib::pos &pPos, const int &CapNum, const int &pType);
