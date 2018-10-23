@@ -86,6 +86,40 @@ namespace draughts
 		{
 			moveDef(MOVE, startPos);
 		}
+
+
+		// Operator overloading
+		bool operator==(const moveDef &input)
+		{
+			if (m_moveType != input.m_moveType)
+				return false;
+
+			if (m_staPos != input.m_staPos)
+				return false;
+
+			if (m_moves.size() == input.m_moves.size())
+			{
+				for (int i = 0; i < input.m_moves.size(); i++)
+				{
+					if (!(m_moves[i] == input.m_moves[i]))
+						return false;
+				}
+			}
+
+			if (m_moveType == CAPTURE)
+			{
+				if (m_capt.size() == input.m_capt.size())
+				{
+					for (int i = 0; i < input.m_capt.size(); i++)
+					{
+						if (!(m_capt[i] == input.m_capt[i]))
+							return false;
+					}
+				}
+			}
+
+			return true;
+		}
 	};
 
 	// Initializes the board put in byRef
@@ -95,7 +129,7 @@ namespace draughts
 	void print(const int(&board)[10][10]);
 
 	// Moves a piece (takes movement rules into account, but does not check for captures.)
-	bool move(int(&board)[10][10], const moveDef &move);
+	bool move(int(&board)[10][10], moveDef &move);
 
 	bool move(int(&board)[10][10], const int(&curPos)[2], const int(&desPos)[2]);
 
@@ -108,8 +142,17 @@ namespace draughts
 	bool capture(int(&board)[10][10], moveDef &move);
 
 
+
+	void ComCapture(int(&board)[10][10], const moveDef &move);
+
+
+	void ComMov(int(&board)[10][10], const moveDef &move);
+
+
 	// Gets all possible moves (sees captures)
 	std::vector<moveDef> GetLegalMoves(int(&board)[10][10]);
+
+	std::vector<moveDef> GetLegalMoves(int(&board)[10][10], const int side);
 
 	// Checks if a capture is legal (captures start in the top left and go clockwise, they also start at 0).
 	bool LegalCap(const int(&board)[10][10], const blib::pos &pPos, const int &CapNum, const int &CapLeng, const int &pType, blib::pos &CaptP);
@@ -120,16 +163,17 @@ namespace draughts
 
 	bool LegalCap(const int(&board)[10][10], const blib::pos &pPos, const int &CapNum);
 
-	// Gets all possible captures (finds best capture (rule)), returns { 0, 0 } if no captures exist.
-	std::vector<moveDef> GetCaptures(int (&board)[10][10]);
+	// Checks if a King move is legal
+	bool LegalKMov(const int(&board)[10][10], const blib::pos &pPos, const int &CapNum, const int &CapLeng);
+
 
 	// Gets the captures of a specific piece
 	std::vector<moveDef> GetPCap(int(&board)[10][10], const blib::pos &piecePos);
 
 	std::vector<moveDef> GetPCap(int(&board)[10][10], const int &from, const int &pType, std::vector<draughts::moveDef> &CapList, const int &smovnum, const blib::pos &newPos);
 
-	// Gets moves/captures of a specific piece (does not call GetCaptures to check if a move is legal at all), returns { 0, 0 } if no moves/captures are legal.
-	std::vector<moveDef> GetPMovCap(int(&board)[10][10], const blib::pos &piecePos);
+	// Gets moves/captures of a specific piece (does not call GetCaptures to check if a move is legal at all), returns an empty list if no moves/captures are legal.
+	std::vector<moveDef> GetPMovCap(int(&board)[10][10], const blib::pos &pPos);
 
 
 } 

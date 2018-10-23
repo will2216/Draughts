@@ -111,6 +111,17 @@ namespace blib
 		}
 
 
+		bool operator!=(const int(&array)[2])
+		{
+			return !(array[0] == m_x && array[1] == m_y);
+		}
+
+		bool operator!=(const pos &input)
+		{
+			return !(input.m_x == m_x && input.m_y == m_y);
+		}
+
+
 		pos()
 			: m_x(0), m_y(0)
 		{

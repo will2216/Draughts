@@ -7,8 +7,6 @@
 #include "headers/draughts.h"
 #include "headers/blib.h"
 
-bool term = true;
-bool* terminator = &term;
 
 void wait(int seconds)
 {
@@ -28,18 +26,13 @@ int main() {
 
 	std::cout << "--------------------------- \n \n";
 
-	board[5][4] = -1;
-	board[4][3] = 0;
-	board[2][7] = 0;
-	board[4][5] = 3;
-	board[4][9] = 3;
-	board[6][3] = 0;
-
+	board[4][3] = 1;
 
 	draughts::print(board);
 
+	
 
-	std::vector<draughts::moveDef> testVector = draughts::GetPCap(board, { 4,5 });
+	std::vector<draughts::moveDef> testVector = draughts::GetLegalMoves(board, -1);
 
 
 	for (int i = 0; i < (int)(testVector.size()); i++) {

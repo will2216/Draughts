@@ -101,110 +101,32 @@ bool draughts::move(int(&board)[10][10], const int(&curPos)[2], const int(&desPo
 	return move(board, moveD);
 }
 
-bool draughts::move(int(&board)[10][10], const draughts::moveDef &move)
+bool draughts::move(int(&board)[10][10], draughts::moveDef &move)
 {
-	// if the position of the piece or the destination are invalid, return false.
-	if (!((move.m_moves[0].m_x > -1) && (move.m_moves[0].m_y > -1) && (move.m_staPos.m_x > -1) && (move.m_staPos.m_y > -1)))
+	if (!board[move.m_staPos.m_x][move.m_staPos.m_y] || board[move.m_staPos.m_x][move.m_staPos.m_y] == -9)
 		return false;
 
-	// if the target of movement is invalid (0 or -9), return false.
-	else if (!board[move.m_staPos.m_x][move.m_staPos.m_y] || board[move.m_staPos.m_x][move.m_staPos.m_y] == -9)
-		return false;
+	std::vector<draughts::moveDef> moveList = GetPCap(board, move.m_staPos);
 
-	// if the target of movement is a "man". execute this to attempt movement.
-	else if (board[move.m_staPos.m_x][move.m_staPos.m_y] == 1 || board[move.m_staPos.m_x][move.m_staPos.m_y] == -1)
+	for (int i = 0; i < moveList.size(); i++)
 	{
-		// first we check if the movement is ONE rank difference in the correct direction.
-		// then we check if the movement is ONE file difference (pieces always change files whe moving)
-		// then lastly we check if the spot the piece wants to move to is free(0)
-		if (((-board[move.m_staPos.m_x][move.m_staPos.m_y] + move.m_staPos.m_x) == move.m_moves[0].m_x) /**/ && /**/ ((move.m_staPos.m_y + 1 == move.m_moves[0].m_y) || (move.m_staPos.m_y - 1 == move.m_moves[0].m_y)) /**/ && /**/ (!board[move.m_moves[0].m_x][move.m_moves[0].m_y]))
+		if (move == moveList[i])
 		{
-			board[move.m_moves[0].m_x][move.m_moves[0].m_y] = board[move.m_staPos.m_x][move.m_staPos.m_y];
-			board[move.m_staPos.m_x][move.m_staPos.m_y] = 0;
+			draughts::ComMov(board, move);
 			return true;
 		}
-
-		// if all the conditions are not met, return false.
-		else
-			return false;
 	}
 
-	// if the target of movement is a king, execute this to atttemp movement.
-	else if (board[move.m_staPos.m_x][move.m_staPos.m_y] == 3 || board[move.m_staPos.m_x][move.m_staPos.m_y] == -3)
-	{
-		// if the piece is moving downwards, execute this.
-		if (move.m_staPos.m_x < move.m_moves[0].m_x)
-		{
-			// if the piece is moving diagonally right, execute this.
-			if (move.m_moves[0].m_x - move.m_staPos.m_x == move.m_moves[0].m_y - move.m_staPos.m_y)
-			{
-				int i = 0;
-				while (move.m_moves[0].m_x != move.m_staPos.m_x + i)
-				{
-					i++;
-					if (board[move.m_staPos.m_x + i][move.m_staPos.m_y + i])
-						return false;
-				}
-				board[move.m_moves[0].m_x][move.m_moves[0].m_y] = board[move.m_staPos.m_x][move.m_staPos.m_y];
-				board[move.m_staPos.m_x][move.m_staPos.m_y] = 0;
-				return true;
-			}
-			// if the piece is moving diagonally left, execute this.
-			else if (move.m_moves[0].m_x - move.m_staPos.m_x == move.m_staPos.m_y - move.m_moves[0].m_y)
-			{
-				int i = 0;
-				while (move.m_moves[0].m_x != move.m_staPos.m_x + i)
-				{
-					i++;
-					if (board[move.m_staPos.m_x + i][move.m_staPos.m_y - i])
-						return false;
-				}
-				board[move.m_moves[0].m_x][move.m_moves[0].m_y] = board[move.m_staPos.m_x][move.m_staPos.m_y];
-				board[move.m_staPos.m_x][move.m_staPos.m_y] = 0;
-				return true;
-			}
-			else
-				return false;
-		}
-		// if the piece is moving upwards, execute this.
-		else
-		{
-			// if the piece is moving diagonally right, execute this.
-			if (move.m_staPos.m_x - move.m_moves[0].m_x == move.m_moves[0].m_y - move.m_staPos.m_y)
-			{
-				int i = 0;
-				while (move.m_moves[0].m_x != move.m_staPos.m_x - i)
-				{
-					i++;
-					if (board[move.m_staPos.m_x - i][move.m_staPos.m_y + i])
-						return false;
-				}
-				board[move.m_moves[0].m_x][move.m_moves[0].m_y] = board[move.m_staPos.m_x][move.m_staPos.m_y];
-				board[move.m_staPos.m_x][move.m_staPos.m_y] = 0;
-				return true;
-			}
-			// if the piece is moving diagonally left, execute this.
-			else if (move.m_staPos.m_x - move.m_moves[0].m_x == move.m_staPos.m_y - move.m_moves[0].m_y)
-			{
-				int i = 0;
-				while (move.m_moves[0].m_x != move.m_staPos.m_x - i)
-				{
-					i++;
-					if (board[move.m_staPos.m_x - i][move.m_staPos.m_y - i])
-						return false;
-				}
-				board[move.m_moves[0].m_x][move.m_moves[0].m_y] = board[move.m_staPos.m_x][move.m_staPos.m_y];
-				board[move.m_staPos.m_x][move.m_staPos.m_y] = 0;
-				return true;
-			}
-			else
-				return false;
-		}
-	}
-
-
-	// If this return is reached, something went wrong. Return false.
+	// if the code reaches this point, something went wrong.
 	return false;
+}
+
+
+void draughts::ComMov(int(&board)[10][10], const moveDef &move)
+{
+	board[move.m_moves[move.m_moves.size() - 1][0]][move.m_moves[move.m_moves.size() - 1][1]] = board[move.m_staPos[0]][move.m_staPos[1]];
+
+	board[move.m_staPos[0]][move.m_staPos[1]] = 0;
 }
 
 
@@ -377,138 +299,103 @@ bool draughts::LegalCap(const int(&board)[10][10], const blib::pos &pPos, const 
 }
 
 
+bool draughts::LegalKMov(const int(&board)[10][10], const blib::pos &pPos, const int &CapNum, const int &CapLeng)
+{
+	if (CapNum == 0)
+	{
+		for (int i = 1; i < CapLeng + 1; i++)
+		{
+			if (pPos[0] - i < 0 || pPos[1] - i < 0)
+				return false;
+
+			if (board[pPos[0] - i][pPos[1] - i])
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+	else if (CapNum == 1)
+	{
+		for (int i = 1; i < CapLeng + 1; i++)
+		{
+			if (pPos[0] - i < 0 || pPos[1] + i < 0)
+				return false;
+
+			if (board[pPos[0] - i][pPos[1] + i])
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+	else if (CapNum == 2)
+	{
+		for (int i = 1; i < CapLeng + 1; i++)
+		{
+			if (pPos[0] + i < 0 || pPos[1] + i < 0)
+				return false;
+
+			if (board[pPos[0] + i][pPos[1] + i])
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+	else if (CapNum == 3)
+	{
+		for (int i = 1; i < CapLeng + 1; i++)
+		{
+			if (pPos[0] + i < 0 || pPos[1] - i < 0)
+				return false;
+
+			if (board[pPos[0] + i][pPos[1] - i])
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+}
+
+
+
+
 bool draughts::capture(int(&board)[10][10], moveDef &move)
 {
 	// if the capturing piece is invalid, terminate function.
 	if (!board[move.m_staPos.m_x][move.m_staPos.m_y] || board[move.m_staPos.m_x][move.m_staPos.m_y] == -9)
 		return false;
 
-	// if the capturing piece is a "man", do this.
-	if (board[move.m_staPos.m_x][move.m_staPos.m_y] == 1 || board[move.m_staPos.m_x][move.m_staPos.m_y] == -1)
+	std::vector<draughts::moveDef> moveList = GetPCap(board, move.m_staPos);
+
+	for (int i = 0; i < moveList.size(); i++)
 	{
-		if ((move.m_staPos + 2 >> 2) == move.m_moves[0])
+		if (move == moveList[i])
 		{
-
-		}
-		else if ((move.m_staPos + 2 << 2) == move.m_moves[0])
-		{
-
-		}
-		else if ((move.m_staPos - 2 >> 2) == move.m_moves[0])
-		{
-
-		}
-		else if ((move.m_staPos - 2 << 2) == move.m_moves[0])
-		{
-
+			draughts::ComCapture(board, move);
+			return true;
 		}
 	}
-	// if the capturing piece is a king, do this.
-	else if (board[move.m_staPos.m_x][move.m_staPos.m_y] == 3 || board[move.m_staPos.m_x][move.m_staPos.m_y] == -3)
-	{
-
-	}
-
-
-	//// execute this if the capturer is a "man"
-	//else if (board[move.m_staPos.m_x][move.m_staPos.m_y] == 1 || board[move.m_staPos.m_x][move.m_staPos.m_y] == -1)
-	//{
-	//	// if the capture is going down and to the right
-	//	if ((move.m_staPos.m_x + 1 == tarPos[0]) && (move.m_staPos.m_y + 1 == tarPos[1]))
-	//	{
-	//		// check if the pieces are on opposite teams
-	//		if ((board[tarPos[0]][tarPos[1]] < 0 && 0 < board[move.m_staPos.m_x][move.m_staPos.m_y]) || (board[tarPos[0]][tarPos[1]] > 0 && 0 > board[move.m_staPos.m_x][move.m_staPos.m_y]))
-	//		{
-	//			// check if the "landing area" is clear
-	//			if (!board[tarPos[0] + 1][tarPos[1] + 1])
-	//			{
-	//				// do the capture
-	//				board[tarPos[0] + 1][tarPos[1] + 1] = board[move.m_staPos.m_x][move.m_staPos.m_y];
-	//				board[move.m_staPos.m_x][move.m_staPos.m_y] = 0;
-	//				board[tarPos[0]][tarPos[1]] = 0;
-	//				return true;
-	//			}
-	//			else
-	//				return false;
-	//		}
-	//		else
-	//			return false;
-	//	}
-	//	// if the capture is going down and to the left
-	//	else if ((move.m_staPos.m_x + 1 == tarPos[0]) && (move.m_staPos.m_y - 1 == tarPos[1]))
-	//	{
-	//		// check if the pieces are on opposite teams
-	//		if ((board[tarPos[0]][tarPos[1]] < 0 && 0 < board[move.m_staPos.m_x][move.m_staPos.m_y]) || (board[tarPos[0]][tarPos[1]] > 0 && 0 > board[move.m_staPos.m_x][move.m_staPos.m_y]))
-	//		{
-	//			// check if the "landing area" is clear
-	//			if (!board[tarPos[0] + 1][tarPos[1] - 1])
-	//			{
-	//				// do the capture
-	//				board[tarPos[0] + 1][tarPos[1] - 1] = board[move.m_staPos.m_x][move.m_staPos.m_y];
-	//				board[move.m_staPos.m_x][move.m_staPos.m_y] = 0;
-	//				board[tarPos[0]][tarPos[1]] = 0;
-	//				return true;
-	//			}
-	//			else
-	//				return false;
-	//		}
-	//		else
-	//			return false;
-	//	}
-	//	// if the capture is going up and to the right
-	//	else if ((move.m_staPos.m_x - 1 == tarPos[0]) && (move.m_staPos.m_y + 1 == tarPos[1]))
-	//	{
-	//		// check if the pieces are on opposite teams
-	//		if ((board[tarPos[0]][tarPos[1]] < 0 && 0 < board[move.m_staPos.m_x][move.m_staPos.m_y]) || (board[tarPos[0]][tarPos[1]] > 0 && 0 > board[move.m_staPos.m_x][move.m_staPos.m_y]))
-	//		{
-	//			// check if the "landing area" is clear
-	//			if (!board[tarPos[0] - 1][tarPos[1] + 1])
-	//			{
-	//				// do the capture
-	//				board[tarPos[0] - 1][tarPos[1] + 1] = board[move.m_staPos.m_x][move.m_staPos.m_y];
-	//				board[move.m_staPos.m_x][move.m_staPos.m_y] = 0;
-	//				board[tarPos[0]][tarPos[1]] = 0;
-	//				return true;
-	//			}
-	//			else
-	//				return false;
-	//		}
-	//		else
-	//			return false;
-	//	}
-	//	// if the capture is going up and to the left
-	//	else if ((move.m_staPos.m_x - 1 == tarPos[0]) && (move.m_staPos.m_y - 1 == tarPos[1]))
-	//	{
-	//		// check if the pieces are on opposite teams
-	//		if ((board[tarPos[0]][tarPos[1]] < 0 && 0 < board[move.m_staPos.m_x][move.m_staPos.m_y]) || (board[tarPos[0]][tarPos[1]] > 0 && 0 > board[move.m_staPos.m_x][move.m_staPos.m_y]))
-	//		{
-	//			// check if the "landing area" is clear
-	//			if (!board[tarPos[0] - 1][tarPos[1] - 1])
-	//			{
-	//				// do the capture
-	//				board[tarPos[0] - 1][tarPos[1] - 1] = board[move.m_staPos.m_x][move.m_staPos.m_y];
-	//				board[move.m_staPos.m_x][move.m_staPos.m_y] = 0;
-	//				board[tarPos[0]][tarPos[1]] = 0;
-	//				return true;
-	//			}
-	//			else
-	//				return false;
-	//		}
-	//		else
-	//			return false;
-	//	}
-	//	else
-	//		return false;
-	//}
 
 	// if the code reaches this point, something went wrong.
 	return false;
 }
 
-//std::vector<draughts::moveDef> GetCaptures(int(&board)[10][10])
-//{
-//
-//}
+void draughts::ComCapture(int(&board)[10][10], const moveDef &move)
+{
+	board[move.m_moves[move.m_moves.size()-1][0]][move.m_moves[move.m_moves.size() - 1][1]] = board[move.m_staPos[0]][move.m_staPos[1]];
+
+	for (int i = 0; i < move.m_capt.size(); i++)
+	{
+		board[move.m_capt[i][0]][move.m_capt[i][1]] = 0;
+	}
+
+	board[move.m_staPos[0]][move.m_staPos[1]] = 0;
+}
+
+
 
 std::vector<draughts::moveDef> draughts::GetPCap(int(&board)[10][10], const blib::pos &pPos)
 {
@@ -720,4 +607,106 @@ std::vector<draughts::moveDef> draughts::GetPCap(int(&board)[10][10], const int 
 	}
 
 	return CapList;
+}
+
+
+std::vector<draughts::moveDef> draughts::GetPMovCap(int(&board)[10][10], const blib::pos &pPos)
+{
+	std::vector<draughts::moveDef> MoveList = draughts::GetPCap(board, pPos);
+
+	if (!(MoveList.size()))
+	{
+		int pType = board[pPos[0]][pPos[1]];
+		if (pType == 1 || pType == -1)
+		{
+
+			if (board[pPos[0] - pType][pPos[1 - (pPos[1] > 0 ? 1 : 0)]] == 0)
+			{
+				MoveList.push_back(draughts::moveDef(draughts::moveDef::MOVE, pPos, {pPos[0] - pType, pPos[1] - 1}));
+			}
+			if (board[pPos[0] - pType][pPos[1 + (pPos[1] < 9 ? 1 : 0)]] == 0)
+			{
+				MoveList.push_back(draughts::moveDef(draughts::moveDef::MOVE, pPos, { pPos[0] - pType, pPos[1] + 1 }));
+			}
+		}
+		else if (pType == 3 || pType == -3)
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				for (int x = 1; x < 10; x++)
+				{
+					if (LegalKMov(board, pPos, i, x))
+					{
+						if (i == 0)
+							MoveList.push_back(draughts::moveDef(draughts::moveDef::MOVE, pPos, { pPos[0] - x, pPos[1] - x }));
+						else if (i == 1)
+							MoveList.push_back(draughts::moveDef(draughts::moveDef::MOVE, pPos, { pPos[0] - x, pPos[1] + x }));
+						else if (i == 2)
+							MoveList.push_back(draughts::moveDef(draughts::moveDef::MOVE, pPos, { pPos[0] + x, pPos[1] + x }));
+						else if (i == 3)
+							MoveList.push_back(draughts::moveDef(draughts::moveDef::MOVE, pPos, { pPos[0] + x, pPos[1] - x }));
+					}
+				}
+			}
+		}
+		else
+		{
+			return MoveList;
+		}
+	}
+
+	return MoveList;
+}
+
+
+std::vector<draughts::moveDef> draughts::GetLegalMoves(int(&board)[10][10])
+{
+	std::vector<draughts::moveDef> retvec(30);
+
+	for (int i = 0; i < 10; i += 1)
+	{
+		for (int x = ((i + 1) % 2); x < 10; x += 2)
+		{
+			//std::cout << board[i][x] << "\n";
+			std::vector<draughts::moveDef> temp = GetPMovCap(board, { i, x });
+			retvec.insert(retvec.end(), temp.begin(), temp.end());
+		}
+	}
+
+	int largestFound = retvec[0].m_moves.size();
+	//std::cout << largestFound << "\n";
+	int delBegin = 0;
+
+	for (int i = 0; i < retvec.size(); i++)
+	{
+		//std::cout << rvec[i].m_moves.size() << " ; " << (rvec[i].m_moves.size() < largestFound) << "\n";
+		if (retvec[i].m_moves.size() < largestFound)
+		{
+			delBegin = i;
+			break;
+		}
+	}
+	retvec.erase((retvec.begin() + delBegin), retvec.end());
+	
+	return retvec;
+}
+
+std::vector<draughts::moveDef> draughts::GetLegalMoves(int(&board)[10][10], const int side)
+{
+	std::vector<draughts::moveDef> retvec(30);
+
+	for (int i = 0; i < 10; i += 1)
+	{
+		for (int x = ((i + 1) % 2); x < 10; x += 2)
+		{
+			//std::cout << board[i][x] << "\n";
+			if (board[i][x] == side || board[i][x] == side * 3)
+			{
+				std::vector<draughts::moveDef> temp = GetPMovCap(board, { i, x });
+				retvec.insert(retvec.end(), temp.begin(), temp.end());
+			}
+		}
+	}
+
+	return retvec;
 }
