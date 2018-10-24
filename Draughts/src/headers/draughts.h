@@ -10,11 +10,6 @@ namespace draughts
 	// the namespace "draughts" contains rules and manipulations of a game board ... 
 	// an actual board (ie int ArrayNAME[10][10]) has to be present to be manipulated.
 
-	class game
-	{
-		// TODO: IMPLEMENT
-	};
-
 	struct moveDef
 	{
 		enum moveType : unsigned char
@@ -176,4 +171,56 @@ namespace draughts
 	std::vector<moveDef> GetPMovCap(int(&board)[10][10], const blib::pos &pPos);
 
 
+	// Finds a move using PDN plie
+	moveDef FindMove(const std::string &input);
+
+
+	// Turns a number into a blib::pos
+	blib::pos posFNum(const int &input);
+
+	
+	// check if two moves start and end the same (also have to be the same move type)
+	bool eqMove(draughts::moveDef &mov1, draughts::moveDef &mov2);
+
+
+	// A game class
+	class game
+	{
+		int m_board[10][10];
+
+		int m_turn = 1;
+
+		bool m_multiplayer;
+
+
+		// Constructors
+	public:
+		game()
+		{
+			init(m_board);
+		}
+
+		game(int(&board)[10][10])
+		{
+			for (int i = 0; i < 10; i++)
+			{
+				for (int x = 0; x < 10; x++)
+				{
+					m_board[i][x] = board[i][x];
+				}
+			}
+		}
+
+
+		// functions
+
+		//starts the game
+		void start();
+
+
+
+
+	private:
+
+	};
 } 

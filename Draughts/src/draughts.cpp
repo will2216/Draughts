@@ -7,6 +7,112 @@
 #include <string>
 #include <iostream>
 
+void draughts::game::start()
+{
+	std::string temp;
+
+multiplayerOption:
+	std::cout << "Multiplayer? (y/n) \n";
+
+	std::cin >> temp;
+	if (temp == "y" || temp == "Y")
+	{
+		m_multiplayer = true;
+	}
+	else if (temp == "n" || temp == "N")
+	{
+		std::cout << "AI has not been implemented yet. \n \n \n \n \n";
+		system("pause");
+
+		goto multiplayerOption;
+
+		m_multiplayer = false;
+	}
+
+gameState:
+	std::cout << "\n --------------------------------------- \n";
+	std::cout << "Current game state: \n \n";
+	
+	draughts::print(m_board);
+
+	std::cout << "\n";
+
+	std::cin >> temp;
+
+	if (temp == "help")
+	{
+		std::cout << "\n" <<
+			"- DO NOT WRITE THE THINGS IN [] BEFORE ASKED TO \n" <<
+			"- move [PDN plie move, ie 32-28, 19x28] (used to move a piece. Also handels captures) \n" <<
+			"- GPM (get piece moves) (gets all legal moves a piece can perform. written in PDN plies) \n" <<
+			"- GAM (get all moves) (gets all legal moves on the board. written in PDN plies) \n" <<
+			"- resign (the current player resigns) \n" <<
+			"- PDN (outputs the current game PDN to a file in the same directory as the exe)" <<
+			"\n";
+
+		system("pause");
+		goto gameState;
+	}
+	else if (temp == "move")
+	{
+		std::cout << "Move to play?: \n";
+
+		std::cin >> temp;
+
+		draughts::moveDef mov = draughts::FindMove(temp);
+		auto moveList = draughts::GetLegalMoves(m_board, m_turn);
+		bool LegalMove = false;
+
+		for (int i = 0; i < moveList.size(); i++)
+		{
+			if (mov == moveList[i])
+			{
+				LegalMove = true;
+				mov = moveList[i];
+				break;
+			}
+		}
+
+		if (LegalMove)
+		{
+			if (mov.m_moveType == draughts::moveDef::MOVE)
+			{
+				draughts::ComMov(m_board, mov);
+			}
+			else
+			{
+				draughts::ComCapture(m_board, mov);
+			}
+
+			m_turn = -m_turn;
+
+			std::cout << "Move sucessful! \n";
+		}
+		else
+		{
+			std::cout << "ERROR: illegal move \n";
+		}
+
+		system("pause");
+
+		goto gameState;
+	}
+	else
+	{
+		std::cout << "ERROR: unknown command. use 'help' to get a command list. \n";
+
+		system("pause");
+
+		goto gameState;
+	}
+}
+
+
+
+
+
+
+
 
 void draughts::init(int (&board)[10][10]) 
 {
@@ -475,6 +581,7 @@ std::vector<draughts::moveDef> draughts::GetPCap(int(&board)[10][10], const blib
 
 	int largestFound = rvec[0].m_moves.size();
 	//std::cout << largestFound << "\n";
+	bool doDel = false;
 	int delBegin = 0;
 
 	for (int i = 0; i < rvec.size(); i++)
@@ -483,10 +590,12 @@ std::vector<draughts::moveDef> draughts::GetPCap(int(&board)[10][10], const blib
 		if (rvec[i].m_moves.size() < largestFound)
 		{
 			delBegin = i;
+			doDel = true;
 			break;
 		}
 	}
-	rvec.erase((rvec.begin() + delBegin), rvec.end());
+	if(doDel || largestFound == 0)
+		rvec.erase((rvec.begin() + delBegin), rvec.end());
 
 	return rvec;
 }
@@ -661,7 +770,7 @@ std::vector<draughts::moveDef> draughts::GetPMovCap(int(&board)[10][10], const b
 
 std::vector<draughts::moveDef> draughts::GetLegalMoves(int(&board)[10][10])
 {
-	std::vector<draughts::moveDef> retvec(30);
+	std::vector<draughts::moveDef> retvec(1);
 
 	for (int i = 0; i < 10; i += 1)
 	{
@@ -673,8 +782,13 @@ std::vector<draughts::moveDef> draughts::GetLegalMoves(int(&board)[10][10])
 		}
 	}
 
+	std::sort(retvec.begin(), retvec.end(), [](draughts::moveDef a, draughts::moveDef b) {
+		return a.m_moves.size() > b.m_moves.size();
+	});
+
 	int largestFound = retvec[0].m_moves.size();
 	//std::cout << largestFound << "\n";
+	bool doDel = false;
 	int delBegin = 0;
 
 	for (int i = 0; i < retvec.size(); i++)
@@ -683,10 +797,12 @@ std::vector<draughts::moveDef> draughts::GetLegalMoves(int(&board)[10][10])
 		if (retvec[i].m_moves.size() < largestFound)
 		{
 			delBegin = i;
+			doDel = true;
 			break;
 		}
 	}
-	retvec.erase((retvec.begin() + delBegin), retvec.end());
+	if (doDel || largestFound == 0)
+		retvec.erase((retvec.begin() + delBegin), retvec.end());
 	
 	return retvec;
 }
@@ -709,4 +825,78 @@ std::vector<draughts::moveDef> draughts::GetLegalMoves(int(&board)[10][10], cons
 	}
 
 	return retvec;
+}
+
+
+bool draughts::eqMove(draughts::moveDef &mov1, draughts::moveDef &mov2)
+{
+	return ((mov1.m_staPos == mov2.m_staPos) && (mov1.m_moves[mov1.m_moves.size() - 1] == mov2.m_moves[mov2.m_moves.size() - 1]) && (mov1.m_moveType == mov2.m_moveType));
+}
+
+
+blib::pos draughts::posFNum(const int &input)
+{
+	int remainder = input % 5;
+	int rank = ((input + (5 - (remainder == 0 ? 5 : remainder))) / 5) - 1;
+	int file;
+
+	if (rank % 2 == 0)
+	{
+		file = (input - rank * 5) * 2 - 1;
+	}
+	else
+	{
+		file = (input - rank * 5) * 2 - 2;
+	}
+
+	return { rank, file };
+}
+
+
+draughts::moveDef draughts::FindMove(const std::string &input)
+{
+	std::string numS1 = "";
+	std::string numS2 = "";
+
+	draughts::moveDef retVal;
+
+	bool TypeFound = false;
+
+	for (int i = 0; i < input.length(); i++)
+	{
+		if (input[i] == 'x' || input[i] == '-')
+		{
+			if (TypeFound)
+				return draughts::moveDef();
+
+			else
+			{
+				TypeFound = true;
+				if (input[i] == 'x')
+					retVal.m_moveType = draughts::moveDef::CAPTURE;
+				else if (input[i] == '-')
+					retVal.m_moveType = draughts::moveDef::MOVE;
+				else
+					return draughts::moveDef();
+			}
+
+			continue;
+		}
+		else if(TypeFound)
+		{
+			numS2 += input[i];
+		}
+		else
+		{
+			numS1 += input[i];
+		}
+	}
+
+	if (!numS1.length() || !numS2.length())
+		return draughts::moveDef();
+
+	retVal.m_staPos = draughts::posFNum(std::stoi(numS1));
+	retVal.m_moves.push_back(draughts::posFNum(std::stoi(numS2)));
+
+	return retVal;
 }

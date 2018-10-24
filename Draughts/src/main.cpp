@@ -17,31 +17,15 @@ void wait(int seconds)
 
 
 int main() {
-	int board[10][10];
 
-	draughts::init(board);
-	draughts::print(board);
+	//draughts::FindMove("67x2");
 
-	 
+	draughts::game newGame;
 
-	std::cout << "--------------------------- \n \n";
-
-	board[4][3] = 1;
-
-	draughts::print(board);
-
-	
-
-	std::vector<draughts::moveDef> testVector = draughts::GetLegalMoves(board, -1);
-
-
-	for (int i = 0; i < (int)(testVector.size()); i++) {
-		for (int x = 0; x < (int)(testVector[i].m_moves.size()); x++) {
-			std::cout << " " << testVector[i].m_moves[x][0] << " - " << testVector[i].m_moves[x][1] << " ";
-			std::cout << ";";
-		}
-		std::cout << std::endl;
-	}
+	newGame.start();
 
 	system("pause");
 }
+
+
+
