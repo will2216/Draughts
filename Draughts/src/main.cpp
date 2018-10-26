@@ -18,8 +18,6 @@ void wait(int seconds)
 
 int main() {
 
-	//draughts::FindMove("67x2");
-
 	draughts::game newGame;
 
 	newGame.start();

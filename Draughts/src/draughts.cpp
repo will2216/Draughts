@@ -69,6 +69,11 @@ gameState:
 			{
 				LegalMove = true;
 				mov = moveList[i];
+				if (m_board[mov.m_staPos[0]][mov.m_staPos[1]] != m_turn * 3)
+					kingMoves++;
+				else
+					kingMoves = 0;
+
 				break;
 			}
 		}
@@ -81,7 +86,7 @@ gameState:
 			}
 			else
 			{
-				draughts::ComCapture(m_board, mov);
+				draughts::ComCapture(m_board, mov, m_numPieces);
 			}
 
 			m_turn = -m_turn;
@@ -480,7 +485,8 @@ bool draughts::capture(int(&board)[10][10], moveDef &move)
 	{
 		if (move == moveList[i])
 		{
-			draughts::ComCapture(board, move);
+			int PlaceHolder = 0;
+			draughts::ComCapture(board, move, PlaceHolder);
 			return true;
 		}
 	}
@@ -489,9 +495,11 @@ bool draughts::capture(int(&board)[10][10], moveDef &move)
 	return false;
 }
 
-void draughts::ComCapture(int(&board)[10][10], const moveDef &move)
+void draughts::ComCapture(int(&board)[10][10], const moveDef &move, int &pNum)
 {
 	board[move.m_moves[move.m_moves.size()-1][0]][move.m_moves[move.m_moves.size() - 1][1]] = board[move.m_staPos[0]][move.m_staPos[1]];
+
+	pNum -= move.m_capt.size();
 
 	for (int i = 0; i < move.m_capt.size(); i++)
 	{

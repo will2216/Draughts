@@ -138,7 +138,7 @@ namespace draughts
 
 
 
-	void ComCapture(int(&board)[10][10], const moveDef &move);
+	void ComCapture(int(&board)[10][10], const moveDef &move, int &pNum);
 
 
 	void ComMov(int(&board)[10][10], const moveDef &move);
@@ -189,6 +189,8 @@ namespace draughts
 		int m_board[10][10];
 
 		int m_turn = 1;
+		int m_numPieces = 40;
+		int kingMoves = 0;
 
 		bool m_multiplayer;
 
